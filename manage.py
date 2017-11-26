@@ -1,8 +1,7 @@
 from mockapp import create_app
 
 from flask import current_app as app
-from flask.ext.script import Manager
-from flask.ext.migrate import MigrateCommand
+from flask_script import Manager
 from werkzeug.contrib.profiler import ProfilerMiddleware
 
 manager = Manager(create_app)
