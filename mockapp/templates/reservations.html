@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% set template = 'reservations' %}
+
+{% block content %}
+
+<div class="row">
+  <div class="col col-md-1"></div>
+  <div class="col col-md-10">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th scope="col">Name</th>
+          <th scope="col">Reservation Date</th>
+          <th scope="col">Number of Days Staying</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for resv_name, resv_date, resv_days in resv_data %}
+        <tr>
+          <td>{{ resv_name }}</td>
+          <td>{{ resv_date }}</td>
+          <td>{{ resv_days }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="col col-md-1"></div>
+</div>
+
+{% endblock %}
