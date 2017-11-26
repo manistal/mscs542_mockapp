@@ -14,4 +14,5 @@ class DefaultConfig(Config):
     DEBUG = True
     LOG_FILENAME = os.path.join(_this_directory, 'logs/mockapp.log')
     SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://mscs542:finalproject@localhost/mscs542_project'
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
 
