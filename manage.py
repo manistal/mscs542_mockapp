@@ -1,4 +1,6 @@
-from mockapp import create_app
+import config
+from mockapp import create_app, models
+from mockapp.extensions import db
 
 from flask import current_app as app
 from flask_script import Manager
@@ -14,7 +16,7 @@ def runserver(port):
 
 @manager.shell
 def make_shell_context():
-    return dict(app=app)#,db=db,models=models)
+    return dict(app=app,db=db,models=models)
 
 if __name__ == '__main__':
     manager.run()

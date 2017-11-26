@@ -37,7 +37,7 @@ class Reservation(db.Model):
     guest_id = db.Column(db.Integer, db.ForeignKey('guest.guest_id'))
     cc_id = db.Column(db.Integer, db.ForeignKey('credit_card.cc_id'))
 
-    rooms = db.relationship('Room', backref='reservation', nullable=False)
+    rooms = db.relationship('Room', backref='reservation')
     ski_passes = db.relationship('SkiPass', backref='reservation')
     rentals = db.relationship('Rental', backref='reservation')
     golf_reservations = db.relationship('GolfReservation', backref='reservation')
@@ -51,7 +51,7 @@ class Building(db.Model):
     
     resort_id = db.Column(db.Integer, db.ForeignKey('resort.resort_id'))
 
-    rooms = db.relationship('Room', backref='building', nullable=False)
+    rooms = db.relationship('Room', backref='building')
 
 
 class Room(db.Model):
@@ -88,7 +88,7 @@ class Rental(db.Model):
 class GolfReservation(db.Model):
     golfresv_id = db.Column(db.Integer, db.Sequence('golfresv_id'), primary_key=True)
 
-    golfresv_time = db.Column(db.Datetime, default=datetime.now)
+    golfresv_time = db.Column(db.DateTime, default=datetime.now)
 
     golf_course_id = db.Column(db.Integer, db.ForeignKey('golf_course.golf_course_id'))
     resv_id = db.Column(db.Integer, db.ForeignKey('reservation.resv_id'))
