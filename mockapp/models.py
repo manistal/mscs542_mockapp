@@ -7,8 +7,8 @@ from datetime import date, datetime
 class Guest(db.Model):
     guest_id = db.Column(db.Integer, db.Sequence('guest_id'), primary_key=True)
 
-    guest_fname = db.Column(db.String(100))
-    guest_lname = db.Column(db.String(100))
+    guest_fname = db.Column(db.String(100), nullable=False)
+    guest_lname = db.Column(db.String(100), nullable=False)
     guest_email = db.Column(db.String(100))
 
     reservations = db.relationship('Reservation', backref='guest')
@@ -18,9 +18,9 @@ class Guest(db.Model):
 class CreditCard(db.Model):
     cc_id = db.Column(db.Integer, db.Sequence('cc_id'), primary_key=True)
 
-    cc_number = db.Column(db.String(16))
+    cc_number = db.Column(db.String(16), nullable=False)
     cc_provider = db.Column(Enum('Visa', 'MasterCard', 'AmericanExpress', name='accepted_cc_providers'), default='Visa')
-    cc_address = db.Column(db.String)
+    cc_address = db.Column(db.String, nullable=False)
     cc_expiration = db.Column(db.Date, default=date.today)
 
     guest_id = db.Column(db.Integer, db.ForeignKey('guest.guest_id'))
@@ -32,12 +32,12 @@ class Reservation(db.Model):
     resv_id = db.Column(db.Integer, db.Sequence('resv_id'), primary_key=True)
 
     resv_date = db.Column(db.Date, default=date.today)
-    resv_days = db.Column(db.Integer)
+    resv_days = db.Column(db.Integer, default=1)
 
     guest_id = db.Column(db.Integer, db.ForeignKey('guest.guest_id'))
     cc_id = db.Column(db.Integer, db.ForeignKey('credit_card.cc_id'))
+    room_id = db.Column(db.Integer, db.ForeignKey('room.room_id'))
 
-    rooms = db.relationship('Room', backref='reservation')
     ski_passes = db.relationship('SkiPass', backref='reservation')
     rentals = db.relationship('Rental', backref='reservation')
     golf_reservations = db.relationship('GolfReservation', backref='reservation')
@@ -46,8 +46,8 @@ class Reservation(db.Model):
 class Building(db.Model):
     building_id = db.Column(db.Integer, db.Sequence('building_id'), primary_key=True)
 
-    building_name = db.Column(db.String(100))
-    building_address = db.Column(db.String)
+    building_name = db.Column(db.String(100), nullable=False)
+    building_address = db.Column(db.String, nullable=False)
     
     resort_id = db.Column(db.Integer, db.ForeignKey('resort.resort_id'))
 
@@ -57,12 +57,13 @@ class Building(db.Model):
 class Room(db.Model):
     room_id = db.Column(db.Integer, db.Sequence('room_id'), primary_key=True)
     
-    room_floor = db.Column(db.Integer)
-    room_number = db.Column(db.Integer)
+    room_floor = db.Column(db.Integer, nullable=False)
+    room_number = db.Column(db.Integer, nullable=False)
     room_type = db.Column(Enum('Basic', 'Suite', 'Deluxe', 'Special', name='available_room_types'), default='Basic')
 
     building_id = db.Column(db.Integer, db.ForeignKey('building.building_id'))
-    resv_id = db.Column(db.Integer, db.ForeignKey('reservation.resv_id'))
+
+    reservations = db.relationship('Reservation', backref='room')
 
 
 class SkiPass(db.Model):
@@ -106,7 +107,7 @@ class GolfCourse(db.Model):
 class Resort(db.Model):
     resort_id = db.Column(db.Integer, db.Sequence('resort_id'), primary_key=True)
 
-    resort_name = db.Column(db.String(100))
+    resort_name = db.Column(db.String(100), nullable=False)
 
     buildings = db.relationship('Building', backref='resort')
     skipasses = db.relationship('SkiPass', backref='resort')
