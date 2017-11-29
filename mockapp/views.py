@@ -5,7 +5,7 @@ from datetime import datetime, timedelta, date
 import json
 import os
 
-from mockapp.models import Guest, Reservation, Room, Resort, Building
+from mockapp.models import Guest, Reservation, Room, Resort, Building, SkiPass
 from mockapp.extensions import db
 
 bp = Blueprint('dashboard', __name__, template_folder='templates')
@@ -13,21 +13,23 @@ bp = Blueprint('dashboard', __name__, template_folder='templates')
 @bp.route('/')
 @bp.route('/new_reservation', methods=['GET'])
 def new_reservation():
+    resort_query = Resort.query
+    print("RESORT QUERRY\n", resort_query)
     return render_template(
         'new_reservation.html', 
-        resorts=Resort.query.all()
+        resorts=resort_query.all()
     )
 
 @bp.route('/new_reservation', methods=['POST'])
 def post_reservation():
-    print(request.form)
-
     # Add or get Guest ID 
     guest = Guest.query.filter(
         Guest.guest_fname == request.form.get('guest-fname'),
         Guest.guest_lname == request.form.get('guest-lname'),
         Guest.guest_email == request.form.get('guest-email'),
-    ).first()
+    )
+    print("GUEST QUERY\n", guest)
+    guest = guest.first()
     if guest is None:
         guest = Guest(
             guest_fname = request.form.get('guest-fname'),
@@ -39,7 +41,9 @@ def post_reservation():
     # Get Resort ID 
     resort = Resort.query.filter(
         Resort.resort_name == request.form.get('resort-name')
-    ).first()
+    )
+    print("RESORT QUERY\n", resort)
+    resort = resort.first()
 
     # Parse room type 
     room_type = request.form.get('room-type')
@@ -59,7 +63,7 @@ def post_reservation():
         Room.room_type == room_type, 
         Building.resort == resort
     )
-    print(new_room)
+    print("NEW ROOM QUERY (SO COOL): \n",new_room)
     new_room = new_room.first()
 
     print(guest, room_type, from_date, resv_days, resort, new_room)
@@ -78,7 +82,41 @@ def post_reservation():
         db.session.commit()
     else:
         print(guest, new_room)
+        return redirect(url_for('dashboard.new_reservation'))
 
+    # Get them some passes!
+    adultskipasses = int(request.form.get('skipasses-adult', 0) or 0)
+    halfskipasses = int(request.form.get('skipasses-half', 0) or 0)
+    childskipasses = int(request.form.get('skipasses-child', 0) or 0)
+
+    for day_index in range(0,resv_days):
+        for adults in range(0, adultskipasses):
+            new_pass = SkiPass(
+                resort = resort,
+                reservation = new_reservation,
+                skipass_type = 'FullDay',
+                skipass_day = from_date + timedelta(days=day_index)
+            )
+            db.session.add(new_pass)
+            
+        for halfs in range(0, halfskipasses):
+            new_pass = SkiPass(
+                resort = resort,
+                reservation = new_reservation,
+                skipass_type = 'HalfDay',
+                skipass_day = from_date + timedelta(days=day_index)
+            )
+            db.session.add(new_pass)
+
+        for child in range(0, childskipasses):
+            new_pass = SkiPass(
+                resort = resort,
+                reservation = new_reservation,
+                skipass_type = 'Child',
+                skipass_day = from_date + timedelta(days=day_index)
+            )
+            db.session.add(new_pass)
+    db.session.commit()
     return redirect(url_for('dashboard.new_reservation'))
 
 @bp.route('/rooms')
@@ -108,9 +146,11 @@ def rooms():
 
 @bp.route('/reservations')
 def reservations():
+    reservation_query = Reservation.query.join(Room, Building, Resort)
+    print(reservation_query)
     return render_template(
         'reservations.html',
-        reservations=Reservation.query.all()
+        reservations=reservation_query.all()
     )    
 
 @bp.route('/guests')
@@ -135,14 +175,10 @@ def rentals():
 
 @bp.route('/skipasses')
 def skipasses():
-
-    skipass_data = [
-        ('Guest1', 'John', 'Doe', 'Addr'),
-        ('Guest2', 'Jane', 'Doe', 'Addr')
-    ]
+    print(SkiPass.query.all())
     return render_template(
         'skipasses.html',
-        skipass_data=skipass_data
+        skipasses=SkiPass.query.all()
     )    
 
 @bp.route('/teetimes')

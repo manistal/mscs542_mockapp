@@ -61,21 +61,17 @@
 					</li>
 
 					<li role="presentation" class="nav-item">
-						<a href="{{ url_for('dashboard.teetimes') }}" {% if template == 'teetimes' %} class="nav-link active" {% else %} class="nav-link" {% endif %}>
-							<i class="fa fa-flag"></i>  TeeTimes
-						</a>
-					</li>
-
-					<li role="presentation" class="nav-item">
 						<a href="{{ url_for('dashboard.skipasses') }}" {% if template == 'skipasses' %} class="nav-link active" {% else %} class="nav-link" {% endif %}>
 							<i class="fa fa-snowflake-o"></i>  SkiPasses
 						</a>
 					</li>
 
 					<li role="presentation" class="nav-item">
-						<a href="{{ url_for('dashboard.rentals') }}" {% if template == 'rentals' %} class="nav-link active" {% else %} class="nav-link" {% endif %}>
-							<i class="fa fa-suitcase"></i>  Rentals
-						</a>
+                        <i class="fa fa-suitcase"></i>  Rentals
+					</li>
+
+					<li role="presentation" class="nav-item">
+                        <i class="fa fa-flag"></i>  TeeTimes
 					</li>
 
 
