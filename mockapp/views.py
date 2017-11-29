@@ -6,6 +6,7 @@ import json
 import os
 
 from mockapp.models import Guest, Reservation, Room, Resort, Building
+from mockapp.extensions import db
 
 bp = Blueprint('dashboard', __name__, template_folder='templates')
 
@@ -26,60 +27,83 @@ def post_reservation():
         Guest.guest_fname == request.form.get('guest-fname'),
         Guest.guest_lname == request.form.get('guest-lname'),
         Guest.guest_email == request.form.get('guest-email'),
-    )
+    ).first()
     if guest is None:
         guest = Guest(
             guest_fname = request.form.get('guest-fname'),
             guest_lname = request.form.get('guest-lname'),
             guest_email = request.form.get('guest-email'),
         )
+        db.session.add(guest)
+    
+    # Get Resort ID 
+    resort = Resort.query.filter(
+        Resort.resort_name == request.form.get('resort-name')
+    ).first()
 
+    # Parse room type 
     room_type = request.form.get('room-type')
     room_type = room_type if room_type != 'Room Type' else 'Basic'
+
+    # Parse date info 
     from_date = datetime.strptime(request.form.get('from-date'), '%m/%d/%Y').date()
     to_date = datetime.strptime(request.form.get('to-date'), '%m/%d/%Y').date()
-    find_available_room = Room.query.join(Reservation).filter(
-        Room.room_type == room_type,
-        or_(
-            and_(
-                Reservation.resv_date < from_date,
-                Reservation.resv_date > to_date,
-            ),
-            not_(Room.reservations.any())
-        )
-    )
+    resv_days = (to_date - from_date).days
 
-    return render_template(
-        'new_reservation.html'
+    # Find a room
+    new_room = Room.query.join(Building).filter(
+        ~Room.reservations.any(and_(
+            Reservation.resv_date <= to_date,
+            Reservation.resv_days + Reservation.resv_date >= from_date
+        )),
+        Room.room_type == room_type, 
+        Building.resort == resort
     )
+    print(new_room)
+    new_room = new_room.first()
+
+    print(guest, room_type, from_date, resv_days, resort, new_room)
+
+    # Create Reservation
+    if guest and new_room and from_date and resv_days:
+        new_reservation = Reservation(
+            resv_date = from_date,
+            resv_days = resv_days,
+            guest = guest,
+            room = new_room,
+        )
+        print(new_reservation)
+
+        db.session.add(new_reservation)
+        db.session.commit()
+    else:
+        print(guest, new_room)
+
+    return redirect(url_for('dashboard.new_reservation'))
 
 @bp.route('/rooms')
 def rooms():
-    #available_rooms = Room.query.join(Reservation, Building).filter(
-    #    or_(
-    #        and_(
-    #            Reservation.resv_date < date.today(),
-    #            Reservation.resv_date > date.today(),
-    #        ),
-    #        not_(Room.reservations.any())
-    #    )
-    #).all()
     available_rooms = Room.query.filter(
-        ~Room.reservations.any(),
-    ).all()
+        ~Room.reservations.any(and_(
+            Reservation.resv_date <= date.today(),
+            Reservation.resv_days + Reservation.resv_date >= date.today()
+        )),
+    )
 
-    unavailable_rooms = Room.query.join(Reservation).filter(
-        Reservation.resv_date > date.today(),
-        Reservation.resv_date < date.today(),
-    ).all()
+    unavailable_rooms = Room.query.filter(
+        Room.reservations.any(and_(
+            Reservation.resv_date <= date.today(),
+            Reservation.resv_days + Reservation.resv_date >= date.today()
+        )),
+    )
 
-    all_rooms = Room.query.join(Building).all()
+    print("\nAVAILABLEROOMS\n", available_rooms, "\n\n")
+    print("\nUNAVAILABLEROOMS\n", unavailable_rooms, "\n\n")
 
     return render_template(
         'rooms.html',
-        all_rooms=all_rooms, 
-        available_rooms=available_rooms,
-        unavailable_rooms=unavailable_rooms
+        available_rooms=available_rooms.all(),
+        unavailable_rooms=unavailable_rooms.all()
     )    
 
 @bp.route('/reservations')
