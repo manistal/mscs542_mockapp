@@ -10,17 +10,21 @@
     <table class="table table-striped">
       <thead>
         <tr>
-          <th scope="col">Name</th>
+          <th scope="col">Guest First Name</th>
+          <th scope="col">Guest Last Name</th>
+          <th scope="col">Guest Email</th>
           <th scope="col">Reservation Date</th>
           <th scope="col">Number of Days Staying</th>
         </tr>
       </thead>
       <tbody>
-      {% for resv_name, resv_date, resv_days in resv_data %}
+      {% for resv in reservations %}
         <tr>
-          <td>{{ resv_name }}</td>
-          <td>{{ resv_date }}</td>
-          <td>{{ resv_days }}</td>
+          <td>{{ resv.guest.guest_fname }}</td>
+          <td>{{ resv.guest.guest_fname }}</td>
+          <td>{{ resv.guest.guest_email }}</td>
+          <td>{{ resv.resv_date }}</td>
+          <td>{{ resv.resv_days }} Days </td>
         </tr>
       {% endfor %}
       </tbody>

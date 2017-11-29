@@ -1,11 +1,11 @@
 
 from flask import Blueprint, render_template, request, redirect, jsonify, flash, url_for
 from sqlalchemy import not_, or_, and_
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 import json
 import os
 
-from mockapp.models import Guest, Reservation, Room, Resort
+from mockapp.models import Guest, Reservation, Room, Resort, Building
 
 bp = Blueprint('dashboard', __name__, template_folder='templates')
 
@@ -53,41 +53,49 @@ def post_reservation():
         'new_reservation.html'
     )
 
+@bp.route('/rooms')
+def rooms():
+    #available_rooms = Room.query.join(Reservation, Building).filter(
+    #    or_(
+    #        and_(
+    #            Reservation.resv_date < date.today(),
+    #            Reservation.resv_date > date.today(),
+    #        ),
+    #        not_(Room.reservations.any())
+    #    )
+    #).all()
+    available_rooms = Room.query.filter(
+        ~Room.reservations.any(),
+    ).all()
+
+    unavailable_rooms = Room.query.join(Reservation).filter(
+        Reservation.resv_date > date.today(),
+        Reservation.resv_date < date.today(),
+    ).all()
+
+    all_rooms = Room.query.join(Building).all()
+
+    return render_template(
+        'rooms.html',
+        all_rooms=all_rooms, 
+        available_rooms=available_rooms,
+        unavailable_rooms=unavailable_rooms
+    )    
+
 @bp.route('/reservations')
 def reservations():
-
-    resv_data = [
-        ('Guest1', 'June 27 2017', '3 days'),
-        ('Guest2', 'June 27 2017', '3 days')
-    ]
     return render_template(
         'reservations.html',
-        resv_data=resv_data
+        reservations=Reservation.query.all()
     )    
 
 @bp.route('/guests')
 def guests():
-
-    guest_data = [
-        ('guest1', 'john', 'doe', 'addr'),
-        ('guest2', 'jane', 'doe', 'addr')
-    ]
     return render_template(
         'guests.html',
-        guest_data=guest_data
+        guests=Guest.query.all()
     )    
 
-@bp.route('/rooms')
-def rooms():
-
-    room_data = [
-        ('room1', 'john', 'doe', 'addr'),
-        ('room2', 'jane', 'doe', 'addr')
-    ]
-    return render_template(
-        'rooms.html',
-        room_data=room_data
-    )    
 
 @bp.route('/rentals')
 def rentals():
