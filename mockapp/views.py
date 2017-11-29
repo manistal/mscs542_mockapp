@@ -1,12 +1,57 @@
 
 from flask import Blueprint, render_template, request, redirect, jsonify, flash, url_for
+from sqlalchemy import not_, or_, and_
 from datetime import datetime, timedelta
 import json
 import os
 
+from mockapp.models import Guest, Reservation, Room 
+
 bp = Blueprint('dashboard', __name__, template_folder='templates')
 
 @bp.route('/')
+@bp.route('/new_reservation', methods=['GET'])
+def new_reservation():
+    return render_template(
+        'new_reservation.html'
+    )
+
+@bp.route('/new_reservation', methods=['POST'])
+def post_reservation():
+    print(request.form)
+
+    # Add or get Guest ID 
+    guest = Guest.query.filter(
+        Guest.guest_fname == request.form.get('guest-fname'),
+        Guest.guest_lname == request.form.get('guest-lname'),
+        Guest.guest_email == request.form.get('guest-email'),
+    )
+    if guest is None:
+        guest = Guest(
+            guest_fname = request.form.get('guest-fname'),
+            guest_lname = request.form.get('guest-lname'),
+            guest_email = request.form.get('guest-email'),
+        )
+
+    room_type = request.form.get('room-type')
+    room_type = room_type if room_type != 'Room Type' else 'Basic'
+    from_date = datetime.strptime(request.form.get('from-date'), '%m/%d/%Y').date()
+    to_date = datetime.strptime(request.form.get('to-date'), '%m/%d/%Y').date()
+    find_available_room = Room.query.join(Reservation).filter(
+        Room.room_type == room_type,
+        or_(
+            and_(
+                Reservation.resv_date < from_date,
+                Reservation.resv_date > to_date,
+            ),
+            not_(Room.reservations.any())
+        )
+    )
+
+    return render_template(
+        'new_reservation.html'
+    )
+
 @bp.route('/reservations')
 def reservations():
 

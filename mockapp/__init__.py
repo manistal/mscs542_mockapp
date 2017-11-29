@@ -3,7 +3,7 @@ from flask import Flask, url_for, render_template, g, request, redirect, current
 
 from datetime import datetime, timedelta
 
-from mockapp.extensions import db
+from mockapp.extensions import db, bs
 from config import DefaultConfig
 
 
@@ -24,6 +24,9 @@ def create_app(config=DefaultConfig):
 
     # Flask SQL Alchemy
     db.init_app(app)
+
+    # Flask Bootstrap
+    bs.init_app(app)
 
     # Blueprints
     from mockapp.views import bp as viewbp
