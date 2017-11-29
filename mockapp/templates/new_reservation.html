@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+{% set template = 'new_reservation' %}
+
+{% block content %}
+
+<form method="post" action="{{ url_for('dashboard.post_reservation') }}">
+
+<!-- Resort Selector --> 
+<div class="row mb-10"><</div>
+<div class="row">
+  <div class="col col-md-2"></div>
+  <div class="col col-md-1">
+    <h3>Resort</h3>
+  </div>
+  <div class="col col-md-5">
+        <div class="form-group"> <!-- Date input -->
+            <select class="form-control" id="room-type" name="room-type">
+                <option>Resort</option>
+                {% for resort in resorts %}
+                <option>{{ resort.resort_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+  </div>
+  <div class="col col-md-4"></div>
+</div>
+
+<!-- Guest Name and Email Entry -->
+<div class="row mb-10"><</div>
+<div class="row">
+  <div class="col col-md-2"></div>
+  <div class="col col-md-1">
+    <h3>Guest</h3>
+  </div>
+  <div class="col col-md-5">
+        <div class="form-group"> <!-- Date input -->
+            <input class="form-control" id="fname" name="guest-fname" placeholder="First Name" type="text"/>
+            <input class="form-control" id="lname" name="guest-lname" placeholder="Last Name" type="text"/>
+            <input class="form-control" id="email" name="guest-email" placeholder="Email" type="text"/>
+        </div>
+  </div>
+  <div class="col col-md-4"></div>
+</div>
+
+
+<!-- DatePicker Entry For Stay -->
+<div class="row mb-10"><</div>
+<div class="row">
+  <div class="col col-md-2"></div>
+  <div class="col col-md-1">
+    <h3>Reservation</h3>
+  </div>
+  <div class="col col-md-5">
+        <div class="form-group"> <!-- Date input -->
+            <input class="form-control datepicker" id="from-date" name="from-date" placeholder="From MM/DD/YYY" type="text"/>
+            <input class="form-control datepicker" id="to-date" name="to-date" placeholder="To MM/DD/YYY" type="text"/>
+            <select class="form-control" id="room-type" name="room-type">
+                <option>Room Type</option>
+                <option>Basic</option>
+                <option>Suite</option>
+                <option>Deluxe</option>
+                <option>Special</option>
+            </select>
+        </div>
+  </div>
+  <div class="col col-md-4"></div>
+</div>
+
+
+<!-- Skipasses -->
+<div class="row mb-10"><</div>
+<div class="row">
+  <div class="col col-md-2"></div>
+  <div class="col col-md-1">
+    <h3>SkiPasses</h3>
+  </div>
+  <div class="col col-md-5">
+
+        <div class="form-inline"> 
+            <input class="form-control" id="adult_passes" name="skipasses-adult" type="number" min="0"/>
+            <label for="adult_passes"> Adult Full Day   </label>
+        </div>
+
+        <div class="form-inline"> 
+            <input class="form-control" id="half_passes" name="skipasses-half" type="number" min="0"/>
+            <label for="half_passes"> Adult Half Day   </label>
+        </div>
+
+        <div class="form-inline"> 
+            <input class="form-control" id="child_passes" name="skipasses-child" type="number" min="0"/>
+            <label for="child_passes"> Children   </label>
+        </div>
+  </div>
+  <div class="col col-md-4"></div>
+</div>
+
+
+<!-- Submit button -->
+<div class="row mb-10"><</div>
+<div class="row">
+    <div class="col col-md-7"></div>
+    <div class="col col-md-1">
+        <button type="submit" class="btn btn-primary">Confirm Reservation</button>
+    </div>
+    <div class="col col-md-4"></div>
+</div>
+
+</form>
+
+
+{% endblock %}

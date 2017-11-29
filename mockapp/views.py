@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 import json
 import os
 
-from mockapp.models import Guest, Reservation, Room 
+from mockapp.models import Guest, Reservation, Room, Resort
 
 bp = Blueprint('dashboard', __name__, template_folder='templates')
 
@@ -13,7 +13,8 @@ bp = Blueprint('dashboard', __name__, template_folder='templates')
 @bp.route('/new_reservation', methods=['GET'])
 def new_reservation():
     return render_template(
-        'new_reservation.html'
+        'new_reservation.html', 
+        resorts=Resort.query.all()
     )
 
 @bp.route('/new_reservation', methods=['POST'])
