@@ -1,17 +1,22 @@
 # MSCS542 Final Project - Ski Resort Reservation System Mockup
 
+```
 Author: Miguel A Nistal 
 Email: nistam328@gmail.com
 Copyright (C) Miguel Nistal - All Rights Reserved
 Unauthorized copying of this source code, via any medium is strictly prohibited
+```
 
 ## Install postgres with homebrew
 
+```
 brew install postgresql 
 brew services start postgresql 
+```
 
 ## Configure
 
+```
 psql postgres
 
 postgres=# CREATE ROLE mscs542 WITH LOGIN PASSWORD 'finalproject';
@@ -52,7 +57,7 @@ postgres=# \list
  template1       | manistal | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =c/manistal          +
                  |          |          |             |             | manistal=CTc/manistal
 (4 rows)
-
+```
 
 ## Page Queries
 
