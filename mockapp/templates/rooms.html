@@ -3,6 +3,33 @@
 {% set template = 'rooms' %}
 
 {% block content %}
+<div class="row">
+    <div class="col col-md-2"></div>
+    <div class="col col-md-8">
+        <h3> Unavailable Rooms </h3>
+        <table class="table table-striped">
+        <thead>
+            <tr>
+            <th scope="col">Floor </th>
+            <th scope="col">Room Number </th>
+            <th scope="col">Room Type </th>
+            <th scope="col">Building Name </th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for room in unavailable_rooms %}
+            <tr>
+            <td>{{ room.room_floor }}</td>
+            <td>{{ room.room_number }}</td>
+            <td>{{ room.room_type }}</td>
+            <td>{{ room.building.building_name }} </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+        </table>
+    </div>
+    <div class="col col-md-2"></div>
+</div>
 
 <div class="row">
     <div class="col col-md-2"></div>
@@ -32,32 +59,5 @@
     <div class="col col-md-2"></div>
 </div>
 
-<div class="row">
-    <div class="col col-md-2"></div>
-    <div class="col col-md-8">
-        <h3> Unavailable Rooms </h3>
-        <table class="table table-striped">
-        <thead>
-            <tr>
-            <th scope="col">Floor </th>
-            <th scope="col">Room Number </th>
-            <th scope="col">Room Type </th>
-            <th scope="col">Building Name </th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for room in unavailable_rooms %}
-            <tr>
-            <td>{{ room.room_floor }}</td>
-            <td>{{ room.room_number }}</td>
-            <td>{{ room.room_type }}</td>
-            <td>{{ room.building.building_name }} </td>
-            </tr>
-        {% endfor %}
-        </tbody>
-        </table>
-    </div>
-    <div class="col col-md-2"></div>
-</div>
 
 {% endblock %}
