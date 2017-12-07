@@ -1,5 +1,4 @@
 import config
-from datagen import generate_data
 from mockapp import create_app, models
 from mockapp.extensions import db
 
@@ -14,10 +13,6 @@ manager = Manager(create_app)
 @manager.option('-p', '--port', help='The port to run the server on.', required=False, dest='port', default=5000)
 def runserver(port):
     app.run('127.0.0.1', port=int(port))
-
-@manager.command
-def gen_data():
-    generate_data(db)
 
 @manager.shell
 def make_shell_context():
